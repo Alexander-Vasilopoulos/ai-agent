@@ -76,8 +76,8 @@ This project was tested on the [Olist Brazilian E-Commerce dataset](https://www.
 
 - The model's generated code runs via Python's `exec()` with no sandboxing. This is fine for local use with trusted, non-sensitive data, but would need a sandboxed execution environment (e.g. a container or restricted subprocess) before handling untrusted input or running in production.
 - Conversation history grows indefinitely across runs; for long-term use this would benefit from summarization or a cap on stored turns.
+- If the script is interrupted mid tool-call (e.g. closed early), the saved conversation can end up with an incomplete tool request. A `repair_messages` check on load detects and drops this automatically so future runs aren't blocked.
 - Currently supports a single CSV file at a time; extending to multiple tables or a database connection would be a natural next step.
-- If the script is interrupted mid tool-call (e.g. closed early), the saved conversation can end up with an incomplete tool request. Use python main.py --reset in your console to repair. 
 
 ## Possible next steps
 

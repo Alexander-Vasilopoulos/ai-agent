@@ -1,6 +1,9 @@
 # Conversation history — personal/test data, not meant to be public
 conversation.json
 
+# dataset
+olist_customers_dataset.csv
+
 # Environment variables / secrets
 .env
 

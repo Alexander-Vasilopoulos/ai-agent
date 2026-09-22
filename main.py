@@ -7,7 +7,7 @@ from anthropic import Anthropic
 
 client = Anthropic()  # picks up ANTHROPIC_API_KEY automatically
 
-df = pd.read_csv("C:/Users/abasi/Desktop/data analyst/powerBI/dsp/Abschlussprojekt/olist_customers_dataset.csv/olist_customers_dataset.csv")  # use your own CSV here
+df = pd.read_csv("olist_customers_dataset.csv")  # use your own CSV here. It must be placed in the same folder as main.py
 
 # Give the model a quick summary of the data so it knows what it's working with
 data_summary = f"""
@@ -17,6 +17,7 @@ First rows:
 {df.head().to_string()}
 """
 
+#test message
 # response = client.messages.create(
 #     model="claude-sonnet-4-6",
 #     max_tokens=500,
@@ -27,12 +28,6 @@ First rows:
 # )
 
 # print(response.content[0].text)
-data_summary = f"""
-Columns: {list(df.columns)}
-Dtypes: {df.dtypes.to_dict()}
-First rows:
-{df.head().to_string()}
-"""
 
 # define tools/methods so the agent knows how to call them. they are used as a parameter in the llm response 
 tools = [
@@ -82,6 +77,7 @@ def save_messages(messages):
 
 def ask_agent(question: str, max_turns: int = 5):
     messages = load_messages()
+    messages = repair_messages(messages)
     messages.append({
         "role": "user",
         "content": f"Question: {question}"
@@ -130,6 +126,17 @@ def ask_agent(question: str, max_turns: int = 5):
     print(f"\n[tokens used this run — input: {total_input_tokens}, output: {total_output_tokens}]")
     return "Stopped after max turns without a final answer."
 
+def repair_messages(messages):
+    """Remove a trailing assistant message if it contains an unanswered tool_use."""
+    if not messages:
+        return messages
+    last = messages[-1]
+    if last["role"] == "assistant":
+        content = last["content"]
+        if any(block.get("type") == "tool_use" for block in content):
+            print("Warning: found an incomplete tool call in saved history — dropping it.")
+            return messages[:-1]
+    return messages
 
 if __name__ == "__main__":
     # typing python main.py --reset in console clears old conversation
