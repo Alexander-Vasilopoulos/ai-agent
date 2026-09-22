@@ -1,0 +1,10 @@
+# Conversation history — personal/test data, not meant to be public
+conversation.json
+
+# Environment variables / secrets
+.env
+
+# Python
+__pycache__/
+*.pyc
+venv/
